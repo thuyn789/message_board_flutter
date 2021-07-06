@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:message_board/app_services/login.dart';
-import 'package:message_board/cloud_services/firebase_services.dart';
-import 'package:message_board/user_services/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:message_board/cloud_services/firebase_services.dart';
+import 'package:message_board/user_services/home.dart';
 import 'package:message_board/user.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -23,7 +22,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-        decoration: BoxDecoration(color: Colors.lightBlueAccent),
+        decoration: BoxDecoration(color: Colors.grey[200]),
         child: ListView(
           //crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -32,7 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
               'Create New Account',
               style: TextStyle(
                 fontSize: 40,
-                color: Colors.white,
+                color: Colors.blueAccent,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -40,7 +39,7 @@ class _SignUpPageState extends State<SignUpPage> {
               'Please fill out the form',
               style: TextStyle(
                 fontSize: 20,
-                color: Colors.white,
+                color: Colors.blueAccent,
               ),
             ),
             SizedBox(height: 75),
@@ -49,7 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
               decoration: InputDecoration(
                 labelText: 'First Name',
                 labelStyle: TextStyle(
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                 ),
               ),
             ),
@@ -59,7 +58,7 @@ class _SignUpPageState extends State<SignUpPage> {
               decoration: InputDecoration(
                 labelText: 'Last Name',
                 labelStyle: TextStyle(
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                 ),
               ),
             ),
@@ -69,11 +68,11 @@ class _SignUpPageState extends State<SignUpPage> {
               decoration: InputDecoration(
                 hintText: 'name@email.com',
                 hintStyle: TextStyle(
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                 ),
                 labelText: 'Email Address',
                 labelStyle: TextStyle(
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                 ),
               ),
             ),
@@ -84,7 +83,7 @@ class _SignUpPageState extends State<SignUpPage> {
               decoration: InputDecoration(
                 labelText: 'Password',
                 labelStyle: TextStyle(
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                 ),
               ),
             ),
@@ -93,26 +92,15 @@ class _SignUpPageState extends State<SignUpPage> {
               height: 45,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25.0),
-                  color: Colors.white),
+                  color: Colors.blueAccent),
               child: MaterialButton(
                 onPressed: () async {
-                  //print('Signup button clicked');
                   bool successful = await AuthServices().signUp(
-                      _email.text.trim(),
-                      _password.text.trim()
-                  ).then((value) async {
-                    User? user = FirebaseAuth.instance.currentUser;
-                    await FirebaseFirestore.instance.collection("users").doc(user!.uid).set(
-                        {
-                          'user_id': user.uid.trim(),
-                          'first_name': _firstName.text.trim(),
-                          'last_name':  _lastName.text.trim(),
-                          'email': _email.text.trim(),
-                          'user_role': 'customer'.trim(),
-                          'reg_date_time': user.metadata.creationTime
-                        });
-                    return true;
-                  });
+                    _firstName.text.trim(),
+                    _lastName.text.trim(),
+                    _email.text.trim(),
+                    _password.text.trim(),
+                  );
                   if (successful) {
                     //when successful, navigate user to home page
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
@@ -137,9 +125,29 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
                 child: Text(
                   'Signup',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(
+                  'Already have an account?',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                ),
+                MaterialButton(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                    child: Text(
+                      'Login here',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent),
+                    )),
+              ],
             ),
           ],
         ),

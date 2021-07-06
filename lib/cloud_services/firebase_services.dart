@@ -5,11 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore database = FirebaseFirestore.instance;
 
   //Login with existing username and password credential
   Future<bool> login(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      UserCredential userCredential = await _auth
           .signInWithEmailAndPassword(email: email, password: password);
       return true;
     } on FirebaseAuthException catch (e) {
@@ -29,7 +30,7 @@ class AuthServices {
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
+    await googleUser!.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
@@ -38,58 +39,52 @@ class AuthServices {
     );
 
     // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    return await _auth.signInWithCredential(credential);
   }
 
-  //Register with new user with user name and password
-  Future<bool> signUp(String email, String password) async {
+  //Register and store new user information
+  Future<bool> signUp(String firstName, String lastName, String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      await _signUpHelper(
+        email.trim(),
+        password.trim(),
+      ).then((value) async {
+        User? user = _auth.currentUser;
+        await database.collection("users").doc(user!.uid).set(
+            {
+              'user_id': user.uid.trim(),
+              'first_name': firstName.trim(),
+              'last_name':  lastName.trim(),
+              'email': email.trim(),
+              'user_role': 'customer'.trim(),
+              'reg_date_time': user.metadata.creationTime
+            });
+      });
       return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  //Register new user with user name and password
+  Future<void> _signUpHelper(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
       }
-      return false;
     } catch (e) {
       print(e);
-      return false;
     }
   }
 
   //Signing user out
   Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
-  //Retrieve all messages
-  Future<void> retrieveMessages(String collection) async {
-    FirebaseFirestore messages = FirebaseFirestore.instance;
-
-    messages.collection(collection).get().then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        print(doc);
-      });
-    });
-  }
-
-  //Check user role
-  Future<String> checkUser(String userID) async {
-    try {
-      FirebaseFirestore user = FirebaseFirestore.instance;
-      return await user
-          .collection('users')
-          .doc(userID)
-          .get()
-          .then((DocumentSnapshot documentSnapshot) {
-        return documentSnapshot["user_role"];
-      });
-    } catch (e) {
-      print(e);
-      return "customer".trim();
-    }
+    await _auth.signOut();
   }
 }

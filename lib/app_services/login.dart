@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
 import 'package:message_board/app_services/signup.dart';
 import 'package:message_board/cloud_services/firebase_services.dart';
 import 'package:message_board/user_services/home.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -10,15 +11,17 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginPage> {
-  TextEditingController _email = TextEditingController();
-  TextEditingController _password = TextEditingController();
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+
+  bool _hideText = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-        decoration: BoxDecoration(color: Colors.lightBlueAccent),
+        decoration: BoxDecoration(color: Colors.grey[200]),
         child: ListView(
           children: <Widget>[
             SizedBox(height: 75),
@@ -27,7 +30,7 @@ class _LoginState extends State<LoginPage> {
               'Welcome',
               style: TextStyle(
                 fontSize: 40,
-                color: Colors.white,
+                color: Colors.blueAccent,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -36,7 +39,7 @@ class _LoginState extends State<LoginPage> {
               'Please login to continue',
               style: TextStyle(
                 fontSize: 20,
-                color: Colors.white,
+                color: Colors.blueAccent,
               ),
             ),
             SizedBox(height: 75),
@@ -46,25 +49,31 @@ class _LoginState extends State<LoginPage> {
               decoration: InputDecoration(
                 hintText: 'name@email.com',
                 hintStyle: TextStyle(
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                 ),
                 labelText: 'Email Address',
                 labelStyle: TextStyle(
-                  color: Colors.white,
+                  color: Colors.blueAccent,
                 ),
               ),
             ),
             SizedBox(height: 5),
             //Text field for password
             TextFormField(
-              obscureText: true,
+              obscureText: _hideText,
               controller: _password,
               decoration: InputDecoration(
-                labelText: 'Password',
-                labelStyle: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+                  labelText: 'Password',
+                  labelStyle: TextStyle(
+                    color: Colors.blueAccent,
+                  ),
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _hideText = !_hideText;
+                        });
+                      },
+                      icon: Icon(Icons.remove_red_eye))),
             ),
             SizedBox(height: 10),
             //Forgot password button
@@ -75,7 +84,12 @@ class _LoginState extends State<LoginPage> {
                     onPressed: () {
                       print('Forgot button clicked');
                     },
-                    child: Text('Forgot Password?')),
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent),
+                    )),
               ],
             ),
             SizedBox(height: 15),
@@ -84,17 +98,16 @@ class _LoginState extends State<LoginPage> {
               height: 45,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25.0),
-                  color: Colors.white),
+                  color: Colors.orangeAccent[100]),
               child: MaterialButton(
                 //When clicked, the app will contact firebase for authentication
                 //using user's inputted login credential
                 onPressed: () async {
-                  //print('Login button clicked');
-                  bool successful = await AuthServices().login(_email.text, _password.text);
+                  bool successful = await AuthServices().login(_email.text.trim(), _password.text.trim());
                   if (successful) {
                     //when successful, navigate user to home page
-                    String accountType = await AuthServices().checkUser(FirebaseAuth.instance.currentUser!.uid);
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => HomePage()));
                   } else {
                     //when not successful, popup alert
                     //and prompt user to try again
@@ -125,19 +138,23 @@ class _LoginState extends State<LoginPage> {
               height: 45,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25.0),
-                  color: Colors.red),
+                  color: Colors.red
+              ),
               child: MaterialButton(
                 //When clicked, the app will contact firebase for authentication
                 //using user's inputted login credential
                 onPressed: () async {
-                  //print('Login button clicked');
-                  await AuthServices().signInWithGoogle().then((UserCredential credential) {
-                    MaterialPageRoute(builder: (context) => HomePage());
+                  await AuthServices()
+                      .signInWithGoogle()
+                      .then((UserCredential credential) {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => HomePage()));
                   });
                 },
                 child: Text(
                   'Login with Google',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),
@@ -145,16 +162,23 @@ class _LoginState extends State<LoginPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text('First Time to Fan App?'),
+                Text(
+                  'First Time to Fan App?',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                ),
                 MaterialButton(
                     onPressed: () {
-                      print('Signup button clicked');
                       Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => SignUpPage()));
+                          MaterialPageRoute(builder: (context) => SignUpPage()));
                     },
-                    child: Text('Create New Account')),
+                    child: Text(
+                      'Create New Account',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent),
+                    )),
               ],
             ),
           ],

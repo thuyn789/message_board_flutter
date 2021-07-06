@@ -40,7 +40,7 @@ dev_dependencies:
 
 #This is a configuration for splash screen for android and web app
 flutter_native_splash:
-  color: "#0096FF"
+  color: "#FFD180"
   image: images/loading_screen.png
   android: true
   web: true

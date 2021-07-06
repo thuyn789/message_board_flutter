@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:message_board/app_services/login.dart';
-import 'package:message_board/cloud_services/firebase_services.dart';
-import 'package:message_board/user_services/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
+import 'package:message_board/app_services/login.dart';
+import 'package:message_board/app_services/navigation_drawer.dart';
+import 'package:message_board/cloud_services/firebase_services.dart';
+import 'package:message_board/user_services/user_profile.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,22 +23,16 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.orangeAccent[100],
         title: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Home',
               style: TextStyle(
                 fontSize: 30,
-                color: Colors.white,
+                color: Colors.brown,
                 fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Let the epic begin',
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.white,
               ),
             ),
           ],
@@ -69,35 +65,38 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.person),
             label: Text('Sign Out?'),
             style: TextButton.styleFrom(
-              primary: Colors.white,
+              primary: Colors.blue,
             ),
           )
         ],
       ),
+      drawer: NavigationDrawer(),
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-        decoration: BoxDecoration(color: Colors.lightBlueAccent),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('messages').snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return Text('Something went wrong');
-            }
-
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Text("Loading");
-            }
-
-            return new ListView(
-              children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-                return new ListTile(
-                  title: new Text(data['message']),
-                  //subtitle: new Text(data['date_created']),
-                );
-              }).toList(),
-            );
-          },
+        decoration: BoxDecoration(color: Colors.grey[200]),
+        child: ListView(
+          children: <Widget>[
+            SizedBox(height: 75),
+            //Page Title
+            Text(
+              'Home',
+              style: TextStyle(
+                fontSize: 40,
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            //Subtitle
+            Text(
+              'Please choose a topic',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.blueAccent,
+              ),
+            ),
+            SizedBox(height: 75),
+            //Text field for email
+          ],
         ),
       ),
       floatingActionButton: SpeedDial(
@@ -118,7 +117,6 @@ class _HomePageState extends State<HomePage> {
                 label: 'Add Messages',
                 labelStyle: TextStyle(fontSize: 18.0, color: Colors.red),
                 onTap: () {
-                  print('Add Message button clicked');
                   showDialog(
                       context: context,
                       builder: (context) {

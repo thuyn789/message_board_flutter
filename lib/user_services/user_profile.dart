@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
+
 import 'package:message_board/app_services/login.dart';
 import 'package:message_board/user_services/home.dart';
 import 'package:message_board/user_services/user_profile.dart';
-import 'package:flutter/material.dart';
 
 class UserProfilePage extends StatefulWidget {
   @override
