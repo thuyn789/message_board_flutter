@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -103,11 +104,19 @@ class _LoginState extends State<LoginPage> {
                 //When clicked, the app will contact firebase for authentication
                 //using user's inputted login credential
                 onPressed: () async {
-                  bool successful = await AuthServices().login(_email.text.trim(), _password.text.trim());
+                  bool successful = await AuthServices()
+                      .login(_email.text.trim(), _password.text.trim());
                   if (successful) {
                     //when successful, navigate user to home page
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => HomePage()));
+                    DocumentSnapshot database =
+                        await AuthServices().retrieveUserData();
+                    final userObj = database.data() as Map<String, dynamic>;
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(
+                                  userObj: userObj,
+                                )));
                   } else {
                     //when not successful, popup alert
                     //and prompt user to try again
@@ -137,18 +146,19 @@ class _LoginState extends State<LoginPage> {
             Container(
               height: 45,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25.0),
-                  color: Colors.red
-              ),
+                  borderRadius: BorderRadius.circular(25.0), color: Colors.red),
               child: MaterialButton(
                 //When clicked, the app will contact firebase for authentication
                 //using user's inputted login credential
                 onPressed: () async {
-                  await AuthServices()
-                      .signInWithGoogle()
-                      .then((UserCredential credential) {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => HomePage()));
+                  await AuthServices().signInWithGoogle().then((User? user) {
+                    final userObj = user as Map<String, dynamic>;
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(
+                                  userObj: userObj,
+                                )));
                   });
                 },
                 child: Text(
@@ -171,7 +181,8 @@ class _LoginState extends State<LoginPage> {
                     onPressed: () {
                       Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignUpPage()));
+                          MaterialPageRoute(
+                              builder: (context) => SignUpPage()));
                     },
                     child: Text(
                       'Create New Account',

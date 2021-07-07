@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:message_board/cloud_services/firebase_services.dart';
 import 'package:message_board/user_services/home.dart';
-import 'package:message_board/user.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -103,7 +101,15 @@ class _SignUpPageState extends State<SignUpPage> {
                   );
                   if (successful) {
                     //when successful, navigate user to home page
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+                    DocumentSnapshot database =
+                        await AuthServices().retrieveUserData();
+                    final userObj = database.data() as Map<String, dynamic>;
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(
+                                  userObj: userObj,
+                                )));
                   } else {
                     //when not successful, popup alert
                     //and prompt user to try again
@@ -111,8 +117,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            content: Text(
-                                'Error Occurred. Please try again!'),
+                            content: Text('Error Occurred. Please try again!'),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () => Navigator.pop(context, true),
@@ -125,7 +130,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
                 child: Text(
                   'Signup',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),

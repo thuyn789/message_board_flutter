@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:message_board/app_services//login.dart';
+import 'package:message_board/cloud_services/firebase_services.dart';
 import 'package:message_board/user_services/home.dart';
+import 'package:message_board/user_services/user_profile.dart';
 
 class NavigationDrawer extends StatelessWidget {
+  NavigationDrawer({
+    required this.userObj,
+  });
+
+  //User Object - A map of DocumentSnapshot
+  //Contain user information, name, uid, and email
+  final userObj;
+
   @override
   Widget build(BuildContext context) {
-   //final name = 'Sarah Abs';
+    //final name = 'Sarah Abs';
     //final email = 'sarah@abs.com';
     //final urlImage =
-        //'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
+    //'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
 
     return Drawer(
       child: Material(
@@ -31,41 +42,29 @@ class NavigationDrawer extends StatelessWidget {
                 children: [
                   SizedBox(height: 24),
                   buildMenuItem(
-                    text: 'People',
-                    icon: Icons.people,
-                    onClicked: () => selectedItem(context, 0),
+                    text: 'Message Boards',
+                    icon: Icons.message,
+                    onClicked: () => menuAction(context, 0),
                   ),
                   SizedBox(height: 16),
                   buildMenuItem(
-                    text: 'Favourites',
-                    icon: Icons.favorite_border,
-                    onClicked: () => selectedItem(context, 1),
-                  ),
-                  SizedBox(height: 16),
-                  buildMenuItem(
-                    text: 'Workflow',
-                    icon: Icons.workspaces_outline,
-                    onClicked: () => selectedItem(context, 2),
-                  ),
-                  SizedBox(height: 16),
-                  buildMenuItem(
-                    text: 'Updates',
-                    icon: Icons.update,
-                    onClicked: () => selectedItem(context, 3),
+                    text: 'User Profile',
+                    icon: Icons.person_pin_rounded,
+                    onClicked: () => menuAction(context, 1),
                   ),
                   SizedBox(height: 24),
                   Divider(color: Colors.brown),
                   SizedBox(height: 24),
                   buildMenuItem(
-                    text: 'Plugins',
-                    icon: Icons.account_tree_outlined,
-                    onClicked: () => selectedItem(context, 4),
+                    text: 'Account Settings',
+                    icon: Icons.account_box,
+                    onClicked: () => menuAction(context, 2),
                   ),
                   SizedBox(height: 16),
                   buildMenuItem(
-                    text: 'Notifications',
-                    icon: Icons.notifications_outlined,
-                    onClicked: () => selectedItem(context, 5),
+                    text: 'Sign Out?',
+                    icon: Icons.person,
+                    onClicked: () => menuAction(context, 3),
                   ),
                 ],
               ),
@@ -131,19 +130,57 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  void selectedItem(BuildContext context, int index) {
+  void menuAction(BuildContext context, int index) {
     Navigator.of(context).pop();
 
     switch (index) {
       case 0:
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(
+                userObj: userObj,
+              ),
+            ));
         break;
       case 1:
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ));
+        print('User Profile');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserProfilePage(
+                userObj: userObj,
+              ),
+            ));
+        break;
+      case 2:
+        print('Account Settings');
+        break;
+      case 3:
+        print('Sign Out');
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Signing Out?'),
+                content: Text('Do you want to sign out?'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: Text('No'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
+                      AuthServices().signOut();
+                    },
+                    child: Text('Yes'),
+                  ),
+                ],
+              );
+            });
         break;
     }
   }

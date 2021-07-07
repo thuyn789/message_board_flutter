@@ -1,59 +1,135 @@
 import 'package:flutter/material.dart';
-
-import 'package:message_board/app_services/login.dart';
-import 'package:message_board/user_services/home.dart';
-import 'package:message_board/user_services/user_profile.dart';
+import 'package:message_board/app_services/navigation_drawer.dart';
+import 'package:message_board/cloud_services/firebase_services.dart';
 
 class UserProfilePage extends StatefulWidget {
+  UserProfilePage({
+    required this.userObj,
+  });
+
+  //User Object - A map of DocumentSnapshot
+  //Contain user information, name, uid, and email
+  final userObj;
+
   @override
   _UserProfileState createState() => _UserProfileState();
 }
 
 class _UserProfileState extends State<UserProfilePage> {
-  TextEditingController _email = TextEditingController();
-  TextEditingController _password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _firstName = TextEditingController(text: widget.userObj['first_name']);
+    TextEditingController _lastName = TextEditingController(text: widget.userObj['last_name']);
+    TextEditingController _email = TextEditingController(text: widget.userObj['email']);
+
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-        decoration: BoxDecoration(
-            color: Colors.lightBlueAccent
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            SizedBox(height: 75),
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.brown),
+        backgroundColor: Colors.orangeAccent[100],
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
             Text(
-              'Add Message',
+              'User Profile',
               style: TextStyle(
-                fontSize: 40,
-                color: Colors.white,
+                fontSize: 30,
+                color: Colors.brown,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
-              'What are you pondering?',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.white,
+          ],
+        ),
+
+      ),
+      drawer: NavigationDrawer(userObj: widget.userObj,),
+      body: Container(
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
+        decoration: BoxDecoration(color: Colors.grey[200]),
+        child: ListView(
+          //crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            SizedBox(height: 75),
+            TextFormField(
+              controller: _firstName,
+              decoration: InputDecoration(
+                labelText: 'First Name',
+                labelStyle: TextStyle(
+                  color: Colors.blueAccent,
+                ),
               ),
             ),
-            SizedBox(height: 75),
-            SizedBox(height: 15),
+            SizedBox(height: 5),
+            TextFormField(
+              controller: _lastName,
+              decoration: InputDecoration(
+                labelText: 'Last Name',
+                labelStyle: TextStyle(
+                  color: Colors.blueAccent,
+                ),
+              ),
+            ),
+            SizedBox(height: 5),
+            TextFormField(
+              controller: _email,
+              decoration: InputDecoration(
+                hintText: 'name@email.com',
+                hintStyle: TextStyle(
+                  color: Colors.blueAccent,
+                ),
+                labelText: 'Email Address',
+                labelStyle: TextStyle(
+                  color: Colors.blueAccent,
+                ),
+              ),
+            ),
+            SizedBox(height: 50),
+            Container(
+              height: 45,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25.0),
+                  color: Colors.blueAccent),
+              child: MaterialButton(
+                onPressed: () {
+                  if(_email.text.isNotEmpty
+                      && _firstName.text.isNotEmpty
+                      && _lastName.text.isNotEmpty){
+                    var update = AuthServices().updateUser(
+                        widget.userObj['user_id'],
+                        _email.text,
+                        _firstName.text,
+                        _lastName.text
+                    );
+                  } else {
+                    buildAlertBox(context, 'Empty Field(s)', 'Please fill out the text completely');
+                  }
+                },
+                child: Text(
+                  'Update Your Info',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          print('Add Message added');
-          Navigator.pop(context);
-        },
-        tooltip: 'Add Message',
-        child: Icon(Icons.add),
-        backgroundColor: Colors.brown,
-      ),
+    );
+  }
+
+  Widget buildAlertBox(
+      BuildContext context,
+      String title,
+      String content) {
+    return AlertDialog(
+      title: Text(title),
+      content: Text(content),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text('OK'),
+        ),
+      ],
     );
   }
 }
