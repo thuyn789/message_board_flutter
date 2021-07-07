@@ -6,6 +6,7 @@ class AuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore database = FirebaseFirestore.instance;
 
+
   //Login with existing username and password credential
   Future<bool> login(String email, String password) async {
     try {
@@ -121,5 +122,15 @@ class AuthServices {
         .doc(userID)
         .update(
             {'email': email, 'first_name': first_name, 'last_name': last_name});
+  }
+
+  //Create a stream that listens to message changes
+  Stream<QuerySnapshot> messageStream(String topic) {
+    return FirebaseFirestore.instance
+        .collection('board_message')
+        .doc(topic)
+        .collection(topic)
+        .orderBy('sendAt', descending: true)
+        .snapshots();
   }
 }
