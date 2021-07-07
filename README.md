@@ -117,5 +117,4 @@ var firebaseConfig = {
 
 ## Bugs and Not Working
 
-- Bug: Message stream does not work properly. Thus messages will not appear automatically. Will try to implement fix.
 - Not working: User cannot update their login credential at the moment.  Will update later
