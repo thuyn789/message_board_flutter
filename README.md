@@ -98,8 +98,14 @@ var firebaseConfig = {
 
 ## Basic App Structure
 
+- The root widget: main.dart
+- After login, the app will bring user to a home screen where user can choose a topic to chat
+- main.dart -> home.dart -> topic -> chat_screen.dart
+
 
 ## Basic Database Structure for chat messages in Firebase Database
+
+- board_message --> topic --> topic--> individual messages
 
 
 ## Login Credentials for Demo Accounts
@@ -110,3 +116,6 @@ var firebaseConfig = {
 
 
 ## Bugs and Not Working
+
+- Bug: Message stream does not work properly. Thus messages will not appear automatically. Will try to implement fix.
+- Not working: User cannot update their login credential at the moment.  Will update later
