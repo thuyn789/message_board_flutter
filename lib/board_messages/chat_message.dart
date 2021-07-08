@@ -5,11 +5,13 @@ class ChatMessage extends StatelessWidget {
     required this.text,
     required this.name,
     required this.date,
+    required this.urlAvatar,
   });
 
   final String text;
   final String name;
   final String date;
+  final String urlAvatar;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,11 @@ class ChatMessage extends StatelessWidget {
         children: [
           Container(
             margin: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(child: Text(name[0])),
+            child: CircleAvatar(
+              radius: 30,
+              backgroundImage: NetworkImage(urlAvatar),
+              //backgroundImage: ,
+            ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

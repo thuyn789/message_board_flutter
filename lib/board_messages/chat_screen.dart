@@ -82,6 +82,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       text: data['message'],
                       name: data['fromName'],
                       date: data['timestamp'],
+                      urlAvatar: widget.userObj['urlAvatar'],
                     )
                   ],
                 );
