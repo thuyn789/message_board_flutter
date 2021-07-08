@@ -6,8 +6,9 @@ import 'package:message_board/user_services/user_profile.dart';
 
 class NavigationDrawer extends StatelessWidget {
   NavigationDrawer({
+    Key? key,
     required this.userObj,
-  });
+  }) : super(key: key);
 
   //User Object - A map of DocumentSnapshot
   //Contain user information, name, uid, and email
@@ -15,27 +16,23 @@ class NavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final name = 'Sarah Abs';
-    //final email = 'sarah@abs.com';
-    //final urlImage =
-    //'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
+    final firstName = userObj['first_name'];
+    final lastName = userObj['last_name'];
+    final name = '$firstName $lastName';
+    final email = userObj['email'];
+    final urlAvatar = userObj['urlAvatar'];
 
     return Drawer(
       child: Material(
         color: Colors.orangeAccent[100],
         child: ListView(
           children: <Widget>[
-            /*buildHeader(
-              urlImage: urlImage,
+            buildHeader(
+              urlAvatar: urlAvatar,
               name: name,
               email: email,
-              onClicked: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => UserPage(
-                  name: 'Sarah Abs',
-                  urlImage: urlImage,
-                ),
-              )),
-            ),*/
+              onClicked: () {},
+            ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -76,7 +73,7 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget buildHeader({
-    required String urlImage,
+    required String urlAvatar,
     required String name,
     required String email,
     required VoidCallback onClicked,
@@ -87,7 +84,7 @@ class NavigationDrawer extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           child: Row(
             children: [
-              CircleAvatar(radius: 30, backgroundImage: NetworkImage(urlImage)),
+              CircleAvatar(radius: 30, backgroundImage: NetworkImage(urlAvatar)),
               SizedBox(width: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,12 +100,6 @@ class NavigationDrawer extends StatelessWidget {
                   ),
                 ],
               ),
-              Spacer(),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Color.fromRGBO(30, 60, 168, 1),
-                child: Icon(Icons.add_comment_outlined, color: Colors.white),
-              )
             ],
           ),
         ),
@@ -144,20 +135,16 @@ class NavigationDrawer extends StatelessWidget {
             ));
         break;
       case 1:
-        print('User Profile');
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => UserProfilePage(
-                userObj: userObj,
-              ),
+              builder: (context) => UserProfilePage(userObj: userObj,),
             ));
         break;
       case 2:
         print('Account Settings');
         break;
       case 3:
-        print('Sign Out');
         showDialog(
             context: context,
             builder: (context) {

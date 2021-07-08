@@ -104,7 +104,7 @@ class AuthServices {
 
   //Retrieve specific user data
   Future<DocumentSnapshot> retrieveUserData() async {
-    return await FirebaseFirestore.instance
+    return await database
         .collection('users')
         .doc(_auth.currentUser!.uid)
         .get();
@@ -114,14 +114,14 @@ class AuthServices {
   Future<void> updateUser(
     String userID,
     String email,
-    String first_name,
-    String last_name,
+    String firstName,
+    String lastName,
   ) {
     return database
         .collection('users')
         .doc(userID)
         .update(
-            {'email': email, 'first_name': first_name, 'last_name': last_name});
+            {'email': email, 'first_name': firstName, 'last_name': lastName});
   }
 
   //Create a stream that listens to message changes
@@ -131,6 +131,14 @@ class AuthServices {
         .doc(topic)
         .collection(topic)
         .orderBy('sendAt', descending: true)
+        .snapshots();
+  }
+
+  //Create a stream that listens to user changes
+  Stream<DocumentSnapshot> userStream(String userID) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
         .snapshots();
   }
 }

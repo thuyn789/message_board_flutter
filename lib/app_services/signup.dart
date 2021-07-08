@@ -22,7 +22,6 @@ class _SignUpPageState extends State<SignUpPage> {
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
         decoration: BoxDecoration(color: Colors.grey[200]),
         child: ListView(
-          //crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             SizedBox(height: 50),
             Text(

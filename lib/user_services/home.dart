@@ -18,7 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController yourMessage = TextEditingController();
   //This variable is to control the appearance of the "Add Message" button
 
   @override

@@ -19,9 +19,15 @@ class _UserProfileState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _firstName = TextEditingController(text: widget.userObj['first_name']);
-    TextEditingController _lastName = TextEditingController(text: widget.userObj['last_name']);
-    TextEditingController _email = TextEditingController(text: widget.userObj['email']);
+    final firstName = widget.userObj['first_name'];
+    final lastName = widget.userObj['last_name'];
+    final name = '$firstName $lastName';
+    final email = widget.userObj['email'];
+    final urlAvatar = widget.userObj['urlAvatar'];
+
+    TextEditingController _firstName = TextEditingController(text: firstName);
+    TextEditingController _lastName = TextEditingController(text: lastName);
+    TextEditingController _email = TextEditingController(text: email);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,7 +46,6 @@ class _UserProfileState extends State<UserProfilePage> {
             ),
           ],
         ),
-
       ),
       drawer: NavigationDrawer(userObj: widget.userObj,),
       body: Container(
@@ -49,7 +54,30 @@ class _UserProfileState extends State<UserProfilePage> {
         child: ListView(
           //crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SizedBox(height: 75),
+            SizedBox(height: 35),
+            Center(
+              child: Column(
+                children: <Widget>[
+                  CircleAvatar(radius: 30, backgroundImage: NetworkImage(urlAvatar)),
+                  SizedBox(width: 50),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(fontSize: 20, color: Colors.brown),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        email,
+                        style: TextStyle(fontSize: 14, color: Colors.brown),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
             TextFormField(
               controller: _firstName,
               decoration: InputDecoration(
@@ -94,14 +122,22 @@ class _UserProfileState extends State<UserProfilePage> {
                   if(_email.text.isNotEmpty
                       && _firstName.text.isNotEmpty
                       && _lastName.text.isNotEmpty){
-                    var update = AuthServices().updateUser(
+                    AuthServices().updateUser(
                         widget.userObj['user_id'],
                         _email.text,
                         _firstName.text,
                         _lastName.text
                     );
+
+                    showDialog(
+                        context: context,
+                        builder: (context) => buildAlertBox(context, '', 'Update Successful')
+                    );
                   } else {
-                    buildAlertBox(context, 'Empty Field(s)', 'Please fill out the text completely');
+                    showDialog(
+                        context: context,
+                        builder: (context) => buildAlertBox(context, 'Empty Field(s)', 'Please fill out the form completely')
+                    );
                   }
                 },
                 child: Text(
