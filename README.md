@@ -7,6 +7,8 @@ A flutter app that allows users to see messages related to specific topics
 - All the bugs and not-working functions have been declared below to the best of my knowledge.  If you can find more bugs, please let me know
 - ***For testing purposes*** There are 2 demo login credentials below.
 - If the source code on github does not work, please use the zip file attached in icollege submission.
+- To install splash screen, run the following command in flutter terminal:
+  +  flutter pub run flutter_native_splash:create
 
 ## Credits
 
