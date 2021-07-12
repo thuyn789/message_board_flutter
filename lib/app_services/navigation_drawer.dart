@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:message_board/app_services//login.dart';
 import 'package:message_board/cloud_services/firebase_services.dart';
 import 'package:message_board/user_services/home.dart';
@@ -135,10 +136,10 @@ class NavigationDrawer extends StatelessWidget {
             ));
         break;
       case 1:
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => UserProfilePage(userObj: userObj,),
+              builder: (context) => UserProfilePage(),
             ));
         break;
       case 2:

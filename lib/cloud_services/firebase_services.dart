@@ -6,7 +6,6 @@ class AuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore database = FirebaseFirestore.instance;
 
-
   //Login with existing username and password credential
   Future<bool> login(String email, String password) async {
     try {
@@ -104,29 +103,22 @@ class AuthServices {
 
   //Retrieve specific user data
   Future<DocumentSnapshot> retrieveUserData() async {
-    return await database
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
-        .get();
+    return await database.collection('users').doc(_auth.currentUser!.uid).get();
   }
 
   //Update user profile
   Future<void> updateUser(
-    String userID,
     String email,
     String firstName,
     String lastName,
   ) {
-    return database
-        .collection('users')
-        .doc(userID)
-        .update(
-            {'email': email, 'first_name': firstName, 'last_name': lastName});
+    return database.collection('users').doc(_auth.currentUser!.uid).update(
+        {'email': email, 'first_name': firstName, 'last_name': lastName});
   }
 
   //Create a stream that listens to message changes
   Stream<QuerySnapshot> messageStream(String topic) {
-    return FirebaseFirestore.instance
+    return database
         .collection('board_message')
         .doc(topic)
         .collection(topic)
@@ -135,10 +127,12 @@ class AuthServices {
   }
 
   //Create a stream that listens to user changes
-  Stream<DocumentSnapshot> userStream(String userID) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(userID)
-        .snapshots();
+  Stream<DocumentSnapshot> userStream() {
+    return database.collection('users').doc(_auth.currentUser!.uid).snapshots();
+  }
+
+  //Retrieve one user's data via a stream
+  Stream<DocumentSnapshot> userDataStream() {
+    return database.collection('users').doc(_auth.currentUser!.uid).snapshots();
   }
 }

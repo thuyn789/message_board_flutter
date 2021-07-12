@@ -75,7 +75,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           return ListView(
               reverse: true,
               children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                final data = document.data() as Map<String, dynamic>;
                 return Row(
                   children: <Widget>[
                     ChatMessage(
@@ -137,13 +137,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _sendMessageToDb(String message) async {
-    String userID = widget.userObj['user_id'];
+    DocumentSnapshot userData = await AuthServices().retrieveUserData();
+    final userObj = userData.data() as Map<String, dynamic>;
+
+    String userID = userObj['user_id'];
 
     final database = FirebaseFirestore.instance.collection('board_message');
 
     await database.doc(widget.topic).collection(widget.topic).add({
       'fromUserID': userID,
-      'fromName': widget.userObj['first_name'],
+      'fromName': userObj['first_name'],
       'message': message,
       'timestamp': _dateHandler(),
       'sendAt' : DateTime.now(),
